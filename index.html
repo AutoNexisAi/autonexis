@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autonexis AI — Find every car. Compare every price.</title>
+    <meta
+      name="description"
+      content="Autonexis AI is the intelligence layer for UK car listings. Search smarter, compare prices across sources, and discover the best deals faster."
+    />
+    <style>
+      :root {
+        --bg: #f5f5f7;
+        --surface: rgba(255, 255, 255, 0.72);
+        --surface-strong: #ffffff;
+        --text: #111111;
+        --muted: #6e6e73;
+        --line: rgba(17, 17, 17, 0.08);
+        --line-strong: rgba(17, 17, 17, 0.12);
+        --blue: #0071e3;
+        --blue-dark: #005bb5;
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        --radius-xl: 32px;
+        --radius-lg: 24px;
+        --radius-md: 18px;
+        --max: 1200px;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(0, 113, 227, 0.08), transparent 30%),
+          linear-gradient(180deg, #fbfbfd 0%, var(--bg) 100%);
+        color: var(--text);
+      }
+
+      a { color: inherit; text-decoration: none; }
+      img { max-width: 100%; display: block; }
+
+      .container {
+        width: min(calc(100% - 32px), var(--max));
+        margin: 0 auto;
+      }
+
+      .nav-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        backdrop-filter: saturate(180%) blur(18px);
+        background: rgba(251, 251, 253, 0.78);
+        border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        gap: 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        font-size: 1.1rem;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0a84ff, #5ac8fa);
+        color: white;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        box-shadow: 0 10px 24px rgba(0, 113, 227, 0.28);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        color: var(--muted);
+        font-size: 0.96rem;
+      }
+
+      .nav-links a:hover { color: var(--text); }
+
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: var(--text);
+        color: white;
+        font-weight: 600;
+      }
+
+      .hero {
+        padding: 72px 0 36px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(0, 113, 227, 0.08);
+        color: var(--blue);
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 28px;
+        align-items: center;
+        margin-top: 24px;
+      }
+
+      h1 {
+        margin: 18px 0 0;
+        font-size: clamp(3rem, 7vw, 5.8rem);
+        line-height: 0.95;
+        letter-spacing: -0.06em;
+        max-width: 760px;
+      }
+
+      .hero-copy {
+        margin-top: 22px;
+        max-width: 700px;
+        color: var(--muted);
+        font-size: 1.18rem;
+        line-height: 1.7;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 24px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+      }
+
+      .btn:hover { transform: translateY(-1px); }
+      .btn-primary { background: var(--blue); color: white; }
+      .btn-primary:hover { background: var(--blue-dark); }
+      .btn-secondary {
+        background: rgba(255,255,255,0.7);
+        color: var(--text);
+        border: 1px solid var(--line-strong);
+      }
+
+      .hero-card,
+      .glass,
+      .feature-card,
+      .panel,
+      .source-card,
+      .cta-panel {
+        background: var(--surface);
+        border: 1px solid rgba(255,255,255,0.6);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(20px) saturate(180%);
+      }
+
+      .hero-card {
+        border-radius: 36px;
+        padding: 18px;
+      }
+
+      .search-panel {
+        background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,245,247,0.92));
+        border: 1px solid rgba(17,17,17,0.06);
+        border-radius: 28px;
+        overflow: hidden;
+      }
+
+      .search-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,0.72);
+      }
+
+      .search-input {
+        flex: 1;
+        min-height: 52px;
+        border: 1px solid var(--line-strong);
+        background: white;
+        border-radius: 999px;
+        padding: 0 18px;
+        font-size: 0.98rem;
+        outline: none;
+      }
+
+      .search-button {
+        min-height: 52px;
+        border: none;
+        border-radius: 999px;
+        padding: 0 20px;
+        background: var(--blue);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .listing-card {
+        padding: 18px;
+      }
+
+      .listing-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .listing-title {
+        margin: 0;
+        font-size: 1.32rem;
+        letter-spacing: -0.03em;
+      }
+
+      .listing-meta {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.96rem;
+      }
+
+      .deal-pill {
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(52, 199, 89, 0.13);
+        color: #147a34;
+        font-weight: 700;
+        white-space: nowrap;
+        font-size: 0.86rem;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .metric {
+        padding: 16px;
+        border-radius: 20px;
+        background: white;
+        border: 1px solid var(--line);
+      }
+
+      .metric-label {
+        color: var(--muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .metric-value {
+        margin-top: 8px;
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .tag {
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: rgba(17,17,17,0.04);
+        border: 1px solid var(--line);
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .glass {
+        border-radius: 24px;
+        padding: 22px;
+      }
+
+      .stat-value {
+        font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: -0.05em;
+      }
+
+      .stat-label {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .section {
+        padding: 36px 0;
+      }
+
+      .section-header {
+        max-width: 760px;
+        margin-bottom: 22px;
+      }
+
+      .section-eyebrow {
+        color: var(--blue);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.76rem;
+      }
+
+      h2 {
+        margin: 10px 0 0;
+        font-size: clamp(2rem, 4vw, 3.3rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+      }
+
+      .section-copy {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 1.06rem;
+        line-height: 1.75;
+      }
+
+      .feature-grid,
+      .source-grid,
+      .seo-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .feature-grid { grid-template-columns: repeat(3, 1fr); }
+      .source-grid { grid-template-columns: repeat(2, 1fr); }
+      .seo-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .feature-card,
+      .source-card,
+      .panel {
+        border-radius: 28px;
+        padding: 26px;
+      }
+
+      .feature-card h3,
+      .source-card h3,
+      .panel h3 {
+        margin: 0;
+        font-size: 1.22rem;
+        letter-spacing: -0.03em;
+      }
+
+      .feature-card p,
+      .source-card p,
+      .panel p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .status {
+        display: inline-flex;
+        margin-top: 18px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(0,113,227,0.09);
+        color: var(--blue);
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+
+      .seo-links {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 4px;
+      }
+
+      .seo-link {
+        border-radius: 20px;
+        padding: 16px 18px;
+        background: rgba(255,255,255,0.7);
+        border: 1px solid var(--line);
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .cta-panel {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 18px;
+        padding: 24px;
+        border-radius: 32px;
+      }
+
+      .contact-box {
+        border-radius: 28px;
+        background: linear-gradient(180deg, #0d0d0f, #1d1d20);
+        color: white;
+        padding: 24px;
+      }
+
+      .contact-box .section-eyebrow { color: #8ec5ff; }
+      .contact-box p { color: rgba(255,255,255,0.72); }
+      .contact-box a { color: white; text-decoration: underline; text-underline-offset: 3px; }
+
+      .contact-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .contact-item {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+
+      footer {
+        padding: 28px 0 50px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        border-top: 1px solid var(--line);
+        padding-top: 24px;
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .cta-panel,
+        .feature-grid,
+        .source-grid,
+        .seo-grid,
+        .stats-row {
+          grid-template-columns: 1fr;
+        }
+
+        .metrics { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 760px) {
+        .nav-links { display: none; }
+        .nav { min-height: 64px; }
+        .hero { padding-top: 40px; }
+        .search-top { flex-direction: column; }
+        .search-button { width: 100%; }
+        .seo-links { grid-template-columns: 1fr; }
+        .footer-inner { flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav-wrap">
+      <div class="container nav">
+        <a href="#top" class="brand">
+          <span class="brand-mark">A</span>
+          <span>Autonexis AI</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#platform">Platform</a>
+          <a href="#sources">Sources</a>
+          <a href="#growth">Growth</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <a class="nav-cta" href="mailto:contact@autonexis.ai">Contact</a>
+      </div>
+    </div>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container">
+          <div class="eyebrow">AI-powered car search and market intelligence</div>
+          <div class="hero-grid">
+            <div>
+              <h1>Find every car.<br />Compare every price.</h1>
+              <p class="hero-copy">
+                Autonexis AI is the intelligence layer for UK car listings. Search smarter,
+                compare duplicate listings across sources, and discover better deals faster.
+              </p>
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#platform">Explore platform</a>
+                <a class="btn btn-secondary" href="mailto:contact@autonexis.ai">Book a demo</a>
+              </div>
+
+              <div class="stats-row">
+                <div class="glass">
+                  <div class="stat-value">1</div>
+                  <div class="stat-label">intelligence layer</div>
+                </div>
+                <div class="glass">
+                  <div class="stat-value">All</div>
+                  <div class="stat-label">sources normalized</div>
+                </div>
+                <div class="glass">
+                  <div class="stat-value">24/7</div>
+                  <div class="stat-label">market monitoring</div>
+                </div>
+                <div class="glass">
+                  <div class="stat-value">AI</div>
+                  <div class="stat-label">deal scoring</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-card">
+              <div class="search-panel">
+                <div class="search-top">
+                  <input class="search-input" value="BMW 3 Series for sale in Birmingham" aria-label="Search cars" />
+                  <button class="search-button">Run AI Search</button>
+                </div>
+                <div class="listing-card">
+                  <div class="listing-head">
+                    <div>
+                      <h3 class="listing-title">BMW 320d M Sport Auto</h3>
+                      <div class="listing-meta">2021 • 34,200 miles • Diesel • Automatic • Birmingham</div>
+                    </div>
+                    <div class="deal-pill">Great Deal</div>
+                  </div>
+                  <div class="metrics">
+                    <div class="metric">
+                      <div class="metric-label">Best price</div>
+                      <div class="metric-value">£18,940</div>
+                    </div>
+                    <div class="metric">
+                      <div class="metric-label">Listings found</div>
+                      <div class="metric-value">3</div>
+                    </div>
+                    <div class="metric">
+                      <div class="metric-label">Price drop</div>
+                      <div class="metric-value">-£850</div>
+                    </div>
+                  </div>
+                  <div class="tags">
+                    <span class="tag">Auto Trader</span>
+                    <span class="tag">eBay Motors</span>
+                    <span class="tag">Dealer Feed</span>
+                    <span class="tag">AI confidence 94%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="platform" class="section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-eyebrow">Platform</div>
+            <h2>Built for cleaner search, sharper decisions, and better buying.</h2>
+            <p class="section-copy">
+              Search-first UX inspired by the best consumer marketplaces, elevated with an AI layer that reveals duplicate listings, pricing gaps, and real market context.
+            </p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="feature-card">
+              <h3>Duplicate listing detection</h3>
+              <p>Collapse the same car across multiple sources into one cleaner result, with source attribution and price differences surfaced instantly.</p>
+            </article>
+            <article class="feature-card">
+              <h3>AI deal scoring</h3>
+              <p>Every car gets a clear signal: great deal, fair value, or overpriced, based on market comps, age, mileage, and listing behaviour.</p>
+            </article>
+            <article class="feature-card">
+              <h3>Market timeline</h3>
+              <p>Track listing freshness, price drops, and days on market so buyers understand what changed and when it happened.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="sources" class="section">
+        <div class="container">
+          <div class="section-header">
+            <div class="section-eyebrow">Source engine</div>
+            <h2>One normalized layer across fragmented automotive inventory.</h2>
+            <p class="section-copy">
+              Autonexis AI is designed to ingest marketplace data, dealer feeds, and structured inventory into one consistent vehicle graph.
+            </p>
+          </div>
+
+          <div class="source-grid">
+            <article class="source-card">
+              <h3>Marketplace search</h3>
+              <p>Connect large inventory sources and route them into a single search experience with consistent fields and ranking logic.</p>
+              <div class="status">Connected strategy</div>
+            </article>
+            <article class="source-card">
+              <h3>Dealer feed ingestion</h3>
+              <p>Normalize CSV, XML, and structured stock feeds into a cleaner internal schema that scales as coverage expands.</p>
+              <div class="status">High priority</div>
+            </article>
+            <article class="source-card">
+              <h3>Listing intelligence</h3>
+              <p>Enrich every vehicle with pricing context, duplicate detection, and source-level freshness signals.</p>
+              <div class="status">AI layer</div>
+            </article>
+            <article class="source-card">
+              <h3>Operator dashboard</h3>
+              <p>Give teams a premium command layer for inventory oversight, source coverage, and pricing visibility.</p>
+              <div class="status">Roadmap</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="growth" class="section">
+        <div class="container">
+          <div class="cta-panel">
+            <div class="panel">
+              <div class="section-eyebrow">Growth engine</div>
+              <h3>Built to win search intent while growing premium brand equity.</h3>
+              <p>
+                The brand stays clean and premium. The SEO strategy captures real buying intent through dedicated landing pages for high-value automotive searches.
+              </p>
+              <div class="seo-links">
+                <div class="seo-link">/cars-for-sale-uk</div>
+                <div class="seo-link">/used-cars-london</div>
+                <div class="seo-link">/bmw-3-series-for-sale</div>
+                <div class="seo-link">/cheap-cars-under-5000</div>
+                <div class="seo-link">/electric-cars-uk</div>
+                <div class="seo-link">/best-used-suvs-uk</div>
+              </div>
+            </div>
+
+            <div id="contact" class="contact-box">
+              <div class="section-eyebrow">Contact</div>
+              <h3 style="margin:10px 0 0; font-size: 1.8rem; letter-spacing:-0.04em;">Launch smarter automotive search.</h3>
+              <p style="margin-top:12px; line-height:1.75;">
+                Want early access, partnerships, or product demos? Start the conversation directly.
+              </p>
+              <div class="contact-list">
+                <div class="contact-item">Email: <a href="mailto:contact@autonexis.ai">contact@autonexis.ai</a></div>
+                <div class="contact-item">Brand: Autonexis AI</div>
+                <div class="contact-item">Positioning: The intelligence layer for car listings</div>
+              </div>
+              <div class="hero-actions" style="margin-top:18px;">
+                <a class="btn btn-primary" href="mailto:contact@autonexis.ai">Email us</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-inner">
+        <div>© 2026 Autonexis AI. All rights reserved.</div>
+        <div>Find every car. Compare every price.</div>
+      </div>
+    </footer>
+  </body>
+</html>
